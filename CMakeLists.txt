@@ -83,9 +83,9 @@ endif()
 
 include_directories("${PROJECT_SOURCE_DIR}")
 
-add_subdirectory(wlab)
-add_subdirectory(wlalink)
-add_subdirectory(byte_tester)
+add_subdirectory(src/wlab)
+add_subdirectory(src/wlalink)
+add_subdirectory(src/byte_tester)
 add_subdirectory(doc)
 
 add_custom_target(generators)
@@ -111,30 +111,30 @@ endif()
 
 # WLA-ARCH executables
 set(WLA_SRCS
-    main.c
-    main.h
-    crc32.c
-    crc32.h
-    hashmap.c
-    hashmap.h
-    parse.c
-    parse.h
-    include_file.c
-    include_file.h
-    pass_1.c
-    pass_1.h
-    pass_2.c
-    pass_2.h
-    pass_3.c
-    pass_3.h
-    pass_4.c
-    pass_4.h
-    stack.c
-    stack.h
-    listfile.c
-    listfile.h
-    printf.c
-    printf.h
+    src/wla-cpu/main.c
+    src/wla-cpu/main.h
+    src/crc32.c
+    src/crc32.h
+    src/hashmap.c
+    src/hashmap.h
+    src/wla-cpu/parse.c
+    src/wla-cpu/parse.h
+    src/wla-cpu/include_file.c
+    src/wla-cpu/include_file.h
+    src/wla-cpu/pass_1.c
+    src/wla-cpu/pass_1.h
+    src/wla-cpu/pass_2.c
+    src/wla-cpu/pass_2.h
+    src/wla-cpu/pass_3.c
+    src/wla-cpu/pass_3.h
+    src/wla-cpu/pass_4.c
+    src/wla-cpu/pass_4.h
+    src/wla-cpu/stack.c
+    src/wla-cpu/stack.h
+    src/wla-cpu/listfile.c
+    src/wla-cpu/listfile.h
+    src/printf.c
+    src/printf.h
     )
 
 foreach(ARCH IN LISTS ARCHS)
@@ -145,8 +145,8 @@ foreach(ARCH IN LISTS ARCHS)
     # Generate opcode table
     if((NOT CMAKE_CROSSCOMPILING) OR CMAKE_CROSSCOMPILING_EMULATOR)
         add_executable(gen-${WLA_NAME}
-            "opcode_table_generator/main.c"
-            "opcodes_${WLA_NAME}.c"
+            "src/opcode_table_generator/main.c"
+            "src/wla-cpu/opcodes/opcodes_${WLA_NAME}.c"
             )
         set_property(TARGET gen-${WLA_NAME} APPEND
             PROPERTY COMPILE_DEFINITIONS
@@ -169,7 +169,7 @@ foreach(ARCH IN LISTS ARCHS)
     # Generate actual wla binary
     add_executable(wla-${WLA_NAME}
         ${WLA_SRCS} "${TABLE_GEN_OUTPUT}"
-        "opcodes_${WLA_NAME}.c"
+        "src/wla-cpu/opcodes/opcodes_${WLA_NAME}.c"
         )
     set_property(TARGET wla-${WLA_NAME} APPEND PROPERTY
         COMPILE_DEFINITIONS "${COMPILE_DEF}")

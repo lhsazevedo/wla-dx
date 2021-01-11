@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "crc32.h"
-#include "defines.h"
+#include "../crc32.h"
+#include "../defines.h"
 
 #include "include_file.h"
 #include "pass_1.h"

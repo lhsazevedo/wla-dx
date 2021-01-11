@@ -19,7 +19,7 @@ DWORD __stdcall GetCurrentProcessId(void);
 #endif
 
 #include "main.h"
-#include "defines.h"
+#include "../defines.h"
 
 #include "parse.h"
 #include "include_file.h"
@@ -28,7 +28,7 @@ DWORD __stdcall GetCurrentProcessId(void);
 #include "pass_3.h"
 #include "pass_4.h"
 #include "listfile.h"
-#include "hashmap.h"
+#include "../hashmap.h"
 #include "printf.h"
 
 

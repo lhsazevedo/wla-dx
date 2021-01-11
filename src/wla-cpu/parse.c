@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "defines.h"
+#include "../defines.h"
 
 #include "parse.h"
 #include "pass_1.h"

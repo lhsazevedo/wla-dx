@@ -7,7 +7,7 @@
 #include <math.h>
 #include <time.h>
 
-#include "defines.h"
+#include "../defines.h"
 
 #include "main.h"
 #include "include_file.h"
@@ -16,7 +16,7 @@
 #include "pass_2.h"
 #include "pass_3.h"
 #include "stack.h"
-#include "hashmap.h"
+#include "../hashmap.h"
 #include "printf.h"
 
 
@@ -1170,46 +1170,46 @@ int evaluate_token(void) {
     switch (opt_tmp->type) {
 
 #ifdef GB
-#include "decode_gb.c"
+#include "decode/decode_gb.c"
 #endif
 #ifdef Z80
-#include "decode_z80.c"
+#include "decode/decode_z80.c"
 #endif
 #ifdef MCS6502
-#include "decode_6502.c"
+#include "decode/decode_6502.c"
 #endif
 #ifdef WDC65C02
-#include "decode_65c02.c"
+#include "decode/decode_65c02.c"
 #endif
 #ifdef CSG65CE02
-#include "decode_65ce02.c"
+#include "decode/decode_65ce02.c"
 #endif
 #ifdef MCS6510
-#include "decode_6510.c"
+#include "decode/decode_6510.c"
 #endif
 #ifdef W65816
-#include "decode_65816.c"
+#include "decode/decode_65816.c"
 #endif
 #ifdef MC6800
-#include "decode_6800.c"
+#include "decode/decode_6800.c"
 #endif
 #ifdef MC6801
-#include "decode_6801.c"
+#include "decode/decode_6801.c"
 #endif
 #ifdef MC6809
-#include "decode_6809.c"
+#include "decode/decode_6809.c"
 #endif
 #ifdef I8008
-#include "decode_8008.c"
+#include "decode/decode_8008.c"
 #endif
 #ifdef I8080
-#include "decode_8080.c"
+#include "decode/decode_8080.c"
 #endif
 #ifdef SPC700
-#include "decode_spc700.c"
+#include "decode/decode_spc700.c"
 #endif
 #ifdef HUC6280
-#include "decode_huc6280.c"
+#include "decode/decode_huc6280.c"
 #endif
 
     }

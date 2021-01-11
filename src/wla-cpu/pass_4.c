@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "defines.h"
+#include "../defines.h"
 
 #include "include_file.h"
 #include "listfile.h"

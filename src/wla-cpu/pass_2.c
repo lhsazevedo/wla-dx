@@ -5,11 +5,11 @@
 #include <string.h>
 #include <time.h>
 
-#include "defines.h"
+#include "../defines.h"
 #include "pass_1.h"
 #include "pass_2.h"
 #include "pass_4.h"
-#include "hashmap.h"
+#include "../hashmap.h"
 #include "printf.h"
 
 
