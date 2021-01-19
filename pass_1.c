@@ -187,11 +187,11 @@ int strcaselesscmp(char *s1, char *s2) {
 
 static int _get_slot_number_by_its_name(char *slot_name, int *number) {
 
-  int i;
+  int index;
   
-  for (i = 0; i < slots_amount; i++) {
-    if (strcmp(slot_name, slots[i].name) == 0) {
-      *number = i;
+  for (index = 0; index < slots_amount; index++) {
+    if (strcmp(slot_name, slots[index].name) == 0) {
+      *number = index;
       return SUCCEEDED;
     }
   }
@@ -205,7 +205,7 @@ static int _get_slot_number_by_its_name(char *slot_name, int *number) {
 
 static int _get_slot_number_by_a_value(int value, int *slot) {
 
-  int i;
+  int index;
 
   if (value < 0) {
     *slot = value;
@@ -214,9 +214,9 @@ static int _get_slot_number_by_a_value(int value, int *slot) {
   
   if (value < slots_amount) {
     /* value can be the direct SLOT ID, but can it be a SLOT's address as well? */
-    for (i = 0; i < slots_amount; i++) {
-      if (slots[i].address == value && value != i) {
-        snprintf(emsg, sizeof(emsg), "There is a SLOT number %d, but there also is a SLOT (with ID %d) with starting address %d ($%x)... Using SLOT %d.\n", value, i, value, value, value);
+    for (index = 0; index < slots_amount; index++) {
+      if (slots[index].address == value && value != index) {
+        snprintf(emsg, sizeof(emsg), "There is a SLOT number %d, but there also is a SLOT (with ID %d) with starting address %d ($%x)... Using SLOT %d.\n", value, index, value, value, value);
         print_error(emsg, ERROR_WRN);
         break;
       }
@@ -226,9 +226,9 @@ static int _get_slot_number_by_a_value(int value, int *slot) {
     return SUCCEEDED;
   }
 
-  for (i = 0; i < slots_amount; i++) {
-    if (slots[i].address == value) {
-      *slot = i;
+  for (index = 0; index < slots_amount; index++) {
+    if (slots[index].address == value) {
+      *slot = index;
       return SUCCEEDED;
     }
   }
@@ -1365,20 +1365,20 @@ int add_a_new_definition(char *name, double value, char *string, int type, int s
 
 int localize_path(char *path) {
 
-  int i;
+  int index;
   
   if (path == NULL)
     return FAILED;
 
-  for (i = 0; path[i] != 0; i++) {
+  for (index = 0; path[index] != 0; index++) {
 #if defined(MSDOS)
     /* '/' -> '\' */
     if (path[i] == '/')
       path[i] = '\\';
 #else
     /* '\' -> '/' */
-    if (path[i] == '\\')
-      path[i] = '/';
+    if (path[index] == '\\')
+      path[index] = '/';
 #endif
   }
 
@@ -8195,7 +8195,7 @@ int directive_stringmap(void) {
   /* parse it */
   for (p = label; *p != 0; /* increment in loop */) {
     struct stringmap_entry *candidate, *entry = NULL;
-    int i;
+    int index;
 
     /* find the longest match for the current string position */
     for (candidate = table->entries; candidate != NULL; candidate = candidate->next) {
@@ -8214,8 +8214,8 @@ int directive_stringmap(void) {
       return FAILED;    
     }
     /* else emit */
-    for (i = 0; i < entry->bytes_length; ++i)
-      fprintf(file_out_ptr, "d%d ", entry->bytes[i]);
+    for (index = 0; index < entry->bytes_length; ++index)
+      fprintf(file_out_ptr, "d%d ", entry->bytes[index]);
 
     /* move pointer on by as much as was matched */
     p += entry->text_length;

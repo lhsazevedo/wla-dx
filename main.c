@@ -352,7 +352,7 @@ void procedures_at_exit(void) {
   struct append_section *as;
   struct label_sizeof *ls;
   struct block_name *bn;
-  int i, index;
+  int index2, index;
   
   /* free all the dynamically allocated data structures and close open files */
   if (file_out_ptr != NULL)
@@ -365,8 +365,8 @@ void procedures_at_exit(void) {
   free(include_dir);
   free(full_name);
 
-  for (i = 0; i < 256; i++)
-    free(label_stack[i]);
+  for (index2 = 0; index2 < 256; index2++)
+    free(label_stack[index2]);
 
   if (defines_map != NULL) {
     hashmap_free_all_elements(defines_map);
@@ -387,8 +387,8 @@ void procedures_at_exit(void) {
   while (m != NULL) {
     /* free the argument labels */
     if (m->nargument_names > 0) {
-      for (i = 0; i < m->nargument_names; i++)
-        free(m->argument_names[i]);
+      for (index2 = 0; index2 < m->nargument_names; index2++)
+        free(m->argument_names[index2]);
       free(m->argument_names);
     }
     macros_first = m->next;
@@ -560,7 +560,7 @@ int generate_extra_definitions(void) {
 
   char *q, tmp[256];
   time_t ti;
-  int i, length;
+  int index, length;
 
   /* generate WLA_TIME */
   time(&ti);
@@ -568,9 +568,9 @@ int generate_extra_definitions(void) {
   strcpy(tmp, q);
   /* remove the linefeed */
   length = (int)strlen(tmp);
-  for (i = 0; i < length; i++) {
-    if (tmp[i] == 0x0A) {
-      tmp[i] = 0;
+  for (index = 0; index < length; index++) {
+    if (tmp[index] == 0x0A) {
+      tmp[index] = 0;
       break;
     }
   }
@@ -591,15 +591,15 @@ int generate_extra_definitions(void) {
 int parse_and_add_definition(char *c, int contains_flag) {
 
   char n[MAX_NAME_LENGTH + 1], *value;
-  int i;
+  int index;
 
   /* skip the flag? */
   if (contains_flag == YES)
     c += 2;
   
-  for (i = 0; i < MAX_NAME_LENGTH && *c != 0 && *c != '='; i++, c++)
-    n[i] = *c;
-  n[i] = 0;
+  for (index = 0; index < MAX_NAME_LENGTH && *c != 0 && *c != '='; index++, c++)
+    n[index] = *c;
+  n[index] = 0;
 
   if (*c == 0)
     return add_a_new_definition(n, 0.0, NULL, DEFINITION_TYPE_VALUE, 0);
@@ -614,13 +614,13 @@ int parse_and_add_definition(char *c, int contains_flag) {
     if (*c == '$' || ((c[strlen(c)-1] == 'h' || c[strlen(c)-1] == 'H') && (*c >= '0' && *c <= '9'))) {
       if (*c == '$')
         c++;
-      for (i = 0; *c != 0; c++) {
+      for (index = 0; *c != 0; c++) {
         if (*c >= '0' && *c <= '9')
-          i = (i << 4) + *c - '0';
+          index = (index << 4) + *c - '0';
         else if (*c >= 'a' && *c <= 'f')
-          i = (i << 4) + *c - 'a' + 10;
+          index = (index << 4) + *c - 'a' + 10;
         else if (*c >= 'A' && *c <= 'F')
-          i = (i << 4) + *c - 'A' + 10;
+          index = (index << 4) + *c - 'A' + 10;
         else if ((*c == 'h' || *c == 'H') && *(c+1) == 0)
           break;
         else {
@@ -628,20 +628,20 @@ int parse_and_add_definition(char *c, int contains_flag) {
           return FAILED;
         }
       }
-      return add_a_new_definition(n, (double)i, NULL, DEFINITION_TYPE_VALUE, 0);
+      return add_a_new_definition(n, (double)index, NULL, DEFINITION_TYPE_VALUE, 0);
     }
 
     /* decimal value? */
     if (*c >= '0' && *c <= '9') {
-      for (i = 0; *c != 0; c++) {
+      for (index = 0; *c != 0; c++) {
         if (*c >= '0' && *c <= '9')
-          i = (i * 10) + *c - '0';
+          index = (index * 10) + *c - '0';
         else {
           fprintf(stderr, "PARSE_AND_ADD_DEFINITION: Error in value (%s).\n", value);
           return FAILED;
         }
       }
-      return add_a_new_definition(n, (double)i, NULL, DEFINITION_TYPE_VALUE, 0);
+      return add_a_new_definition(n, (double)index, NULL, DEFINITION_TYPE_VALUE, 0);
     }
 
     /* quoted string? */

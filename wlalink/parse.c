@@ -10,31 +10,31 @@
 
 int get_next_token(char *in, char *out, int *pos) {
 
-  int i, t;
+  int index, t;
 
 
   /* skip white space */
-  for (i = 0; in[i] == ' ' || in[i] == 0x09; i++);
-  if (in[i] == 0)
+  for (index = 0; in[index] == ' ' || in[index] == 0x09; index++);
+  if (in[index] == 0)
     return FAILED;
 
   /* something between ""? */
-  if (in[i] == '"') {
-    i++;
-    for (t = 0; in[i] != '"' && in[i] != 0x09 && in[i] != 0; i++, t++)
-      out[t] = in[i];
-    if (in[i] == '"')
-      i++;
+  if (in[index] == '"') {
+    index++;
+    for (t = 0; in[index] != '"' && in[index] != 0x09 && in[index] != 0; index++, t++)
+      out[t] = in[index];
+    if (in[index] == '"')
+      index++;
   }
   else {
-    for (t = 0; in[i] != ' ' && in[i] != 0x09 && in[i] != 0; i++, t++)
-      out[t] = in[i];
+    for (t = 0; in[index] != ' ' && in[index] != 0x09 && in[index] != 0; index++, t++)
+      out[t] = in[index];
   }
   
   out[t] = 0;
 
   if (pos != NULL)
-    *pos += i;
+    *pos += index;
 
   return SUCCEEDED;
 }
@@ -42,29 +42,29 @@ int get_next_token(char *in, char *out, int *pos) {
 
 int get_next_number(char *in, int *out, int *pos) {
 
-  int i, o, n;
+  int index, o, n;
 
 
   /* skip white space */
-  for (i = 0; in[i] == ' ' || in[i] == 0x09; i++);
-  if (in[i] == 0)
+  for (index = 0; in[index] == ' ' || in[index] == 0x09; index++);
+  if (in[index] == 0)
     return FAILED;
 
-  if (in[i] >= '0' && in[i] <= '9') {
+  if (in[index] >= '0' && in[index] <= '9') {
     /* is it hex after all? */
     n = 0;
     for (o = 0; 1; o++) {
-      if (in[i+o] >= '0' && in[i+o] <= '9')
+      if (in[index+o] >= '0' && in[index+o] <= '9')
         continue;
-      if (in[i+o] >= 'a' && in[i+o] <= 'f') {
+      if (in[index+o] >= 'a' && in[index+o] <= 'f') {
         n = 1;
         break;
       }
-      if (in[i+o] >= 'A' && in[i+o] <= 'F') {
+      if (in[index+o] >= 'A' && in[index+o] <= 'F') {
         n = 1;
         break;
       }
-      if (in[i+o] == 'h' || in[i+o] == 'H') {
+      if (in[index+o] == 'h' || in[index+o] == 'H') {
         n = 1;
         break;
       }
@@ -75,44 +75,44 @@ int get_next_number(char *in, int *out, int *pos) {
       /* hex */
       o = 0;
       while (TRUE) {
-        if (in[i] >= '0' && in[i] <= '9')
-          o = (o * 16) + in[i] - '0';
-        else if (in[i] >= 'a' && in[i] <= 'f')
-          o = (o * 16) + in[i] - 'a' + 0xA;
-        else if (in[i] >= 'A' && in[i] <= 'F')
-          o = (o * 16) + in[i] - 'A' + 0xA;
-        else if (in[i] == 'h' || in[i] == 'H')
+        if (in[index] >= '0' && in[index] <= '9')
+          o = (o * 16) + in[index] - '0';
+        else if (in[index] >= 'a' && in[index] <= 'f')
+          o = (o * 16) + in[index] - 'a' + 0xA;
+        else if (in[index] >= 'A' && in[index] <= 'F')
+          o = (o * 16) + in[index] - 'A' + 0xA;
+        else if (in[index] == 'h' || in[index] == 'H')
           break;
-        else if (in[i] == ' ' || in[i] == 0x09 || in[i] == 0)
+        else if (in[index] == ' ' || in[index] == 0x09 || in[index] == 0)
           break;
         else
           return FAILED;
-        i++;
+        index++;
       }
     }
     else {
       /* decimal */
-      for (o = 0; in[i] >= '0' && in[i] <= '9'; i++)
-        o = (o * 10) + in[i] - '0';
-      if (!(in[i] == ' ' || in[i] == 0x09 || in[i] == 0))
+      for (o = 0; in[index] >= '0' && in[index] <= '9'; index++)
+        o = (o * 10) + in[index] - '0';
+      if (!(in[index] == ' ' || in[index] == 0x09 || in[index] == 0))
         return FAILED;
     }
   }
-  else if (in[i] == '$') {
-    i++;
+  else if (in[index] == '$') {
+    index++;
     o = 0;
     while (TRUE) {
-      if (in[i] >= '0' && in[i] <= '9')
-        o = (o * 16) + in[i] - '0';
-      else if (in[i] >= 'a' && in[i] <= 'f')
-        o = (o * 16) + in[i] - 'a' + 0xA;
-      else if (in[i] >= 'A' && in[i] <= 'F')
-        o = (o * 16) + in[i] - 'A' + 0xA;
-      else if (in[i] == ' ' || in[i] == 0x09 || in[i] == 0)
+      if (in[index] >= '0' && in[index] <= '9')
+        o = (o * 16) + in[index] - '0';
+      else if (in[index] >= 'a' && in[index] <= 'f')
+        o = (o * 16) + in[index] - 'a' + 0xA;
+      else if (in[index] >= 'A' && in[index] <= 'F')
+        o = (o * 16) + in[index] - 'A' + 0xA;
+      else if (in[index] == ' ' || in[index] == 0x09 || in[index] == 0)
         break;
       else
         return FAILED;
-      i++;
+      index++;
     }
   }
   else
@@ -121,7 +121,7 @@ int get_next_number(char *in, int *out, int *pos) {
   *out = o;
 
   if (pos != NULL)
-    *pos += i;
+    *pos += index;
 
   return SUCCEEDED;
 }

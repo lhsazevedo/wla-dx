@@ -20,13 +20,13 @@ extern unsigned char *rom;
 static int _listfile_sort(const void *a, const void *b) {
 
   struct listfileitem *la, *lb;
-  int i;
+  int index;
 
 
   la = *((struct listfileitem **)a);
   lb = *((struct listfileitem **)b);
-  i = strcmp(la->sourcefilename, lb->sourcefilename);
-  if (i == 0) {
+  index = strcmp(la->sourcefilename, lb->sourcefilename);
+  if (index == 0) {
     /* both lines are from the same source */
     if (la->linenumber < lb->linenumber)
       return -1;
@@ -34,7 +34,7 @@ static int _listfile_sort(const void *a, const void *b) {
   }
 
   /* sort by source file name */
-  return i;
+  return index;
 }
 
 
@@ -285,7 +285,7 @@ int listfile_write_listfiles(struct section *e) {
 int listfile_block_read(unsigned char **d, struct section *s) {
 
   unsigned char *t;
-  int i;
+  int index;
 
 
   if (d == NULL || s == NULL)
@@ -314,21 +314,21 @@ int listfile_block_read(unsigned char **d, struct section *s) {
   }
 
   /* read the items */
-  for (i = 0; i < s->listfile_items; i++) {
-    s->listfile_cmds[i] = *(t++);
-    if (s->listfile_cmds[i] == 'k') {
+  for (index = 0; index < s->listfile_items; index++) {
+    s->listfile_cmds[index] = *(t++);
+    if (s->listfile_cmds[index] == 'k') {
       /* new line */
-      s->listfile_ints[i*3 + 0] = READ_T;
-      s->listfile_ints[i*3 + 1] = READ_T;
-      s->listfile_ints[i*3 + 2] = READ_T;
+      s->listfile_ints[index*3 + 0] = READ_T;
+      s->listfile_ints[index*3 + 1] = READ_T;
+      s->listfile_ints[index*3 + 2] = READ_T;
     }
-    else if (s->listfile_cmds[i] == 'f') {
+    else if (s->listfile_cmds[index] == 'f') {
       /* file name */
-      s->listfile_ints[i*3 + 0] = READ_T;
+      s->listfile_ints[index*3 + 0] = READ_T;
     }
     else {
       s->listfile_items = 0;
-      fprintf(stderr, "LISTFILE_BLOCK_READ: Unknown command '%c'. Internal error. Only known commands are 'k' and 'f'.\n", s->listfile_cmds[i]);
+      fprintf(stderr, "LISTFILE_BLOCK_READ: Unknown command '%c'. Internal error. Only known commands are 'k' and 'f'.\n", s->listfile_cmds[index]);
       return FAILED;
     }
   }

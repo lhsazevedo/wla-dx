@@ -159,7 +159,7 @@ int _cbm_write_prg_header(FILE *f) {
 
 int _smc_create_and_write(FILE *f) {
 
-  int i;
+  int index;
 
 
   if (f == NULL)
@@ -168,20 +168,20 @@ int _smc_create_and_write(FILE *f) {
   if (output_mode != OUTPUT_ROM)
     return FAILED;
 
-  i = romsize/(8*1024);
+  index = romsize/(8*1024);
 
   /* low byte of 8KB page count */
-  fprintf(f, "%c", i & 0xFF);
+  fprintf(f, "%c", index & 0xFF);
   /* high byte of 8KB page count */
-  fprintf(f, "%c", (i>>8) & 0xFF);
+  fprintf(f, "%c", (index>>8) & 0xFF);
 
   /* emulation mode select (?) */
-  i = 0;
+  index = 0;
   if (snes_rom_mode == SNES_ROM_MODE_HIROM || snes_rom_mode == SNES_ROM_MODE_EXHIROM)
-    i |= (1<<5) | (1<<4);
-  i |= (snes_sramsize ^ 3) << 2;
+    index |= (1<<5) | (1<<4);
+  index |= (snes_sramsize ^ 3) << 2;
 
-  fprintf(f, "%c", i);
+  fprintf(f, "%c", index);
 
   /* bytes 3 to 7 are reserved, should be zero */
   fprintf(f, "%c" ,0);
@@ -198,7 +198,7 @@ int _smc_create_and_write(FILE *f) {
   fprintf(f, "%c", 0x04);
 
   /* the rest of the header is zeroes */
-  for (i = 0; i < 512-11; i++)
+  for (index = 0; index < 512-11; index++)
     fprintf(f, "%c", 0);
 
   return SUCCEEDED;
@@ -1095,7 +1095,7 @@ int fix_references(void) {
   struct reference *r;
   struct section *s;
   struct label *l, lt;
-  int i, x;
+  int index, x;
 
 
   section_overwrite = OFF;
@@ -1163,9 +1163,9 @@ int fix_references(void) {
       }
 
       if (get_file(r->file_id)->cpu_65816 == YES)
-        i = get_snes_pc_bank(l) >> 16;
+        index = get_snes_pc_bank(l) >> 16;
       else
-        i = l->base + l->bank;
+        index = l->base + l->bank;
 
       memory_file_id = r->file_id;
       memory_file_id_source = r->file_id_source;
@@ -1177,19 +1177,19 @@ int fix_references(void) {
       /* direct 16-bit */
       if (r->type == REFERENCE_TYPE_DIRECT_16BIT || r->type == REFERENCE_TYPE_RELATIVE_16BIT) {
         if (get_file(r->file_id)->little_endian == YES) {
-          mem_insert_ref(x, i & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
+          mem_insert_ref(x, index & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
         }
         else {
-          mem_insert_ref(x, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 1, i & 0xFF);
+          mem_insert_ref(x, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 1, index & 0xFF);
         }
       }
       /* direct 13-bit */
       else if (r->type == REFERENCE_TYPE_DIRECT_13BIT) {
         /* this is always little endian */
-        mem_insert(x, i & 0xFF);
-        mem_insert_ref_13bit_high(x + 1, (i >> 8) & 0xFF);
+        mem_insert(x, index & 0xFF);
+        mem_insert_ref_13bit_high(x + 1, (index >> 8) & 0xFF);
       }
       /* direct / relative 8-bit with a definition */
       else if (l->status == LABEL_STATUS_DEFINE) {
@@ -1200,19 +1200,19 @@ int fix_references(void) {
       /* direct 24-bit */
       else if (r->type == REFERENCE_TYPE_DIRECT_24BIT) {
         if (get_file(r->file_id)->little_endian == YES) {
-          mem_insert_ref(x, i & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 2, (i >> 16) & 0xFF);
+          mem_insert_ref(x, index & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 2, (index >> 16) & 0xFF);
         }
         else {
-          mem_insert_ref(x, (i >> 16) & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 2, i & 0xFF);
+          mem_insert_ref(x, (index >> 16) & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 2, index & 0xFF);
         }
       }
       /* relative/direct 8-bit with a label */
       else {
-        mem_insert_ref(x, i & 0xFF);
+        mem_insert_ref(x, index & 0xFF);
       }
     }
     /* normal reference */
@@ -1247,101 +1247,101 @@ int fix_references(void) {
 
       /* direct 16-bit */
       if (r->type == REFERENCE_TYPE_DIRECT_16BIT) {
-        i = (int)l->address;
+        index = (int)l->address;
         if (get_file(r->file_id)->little_endian == YES) {
-          mem_insert_ref(x, i & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
+          mem_insert_ref(x, index & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
         }
         else {
-          mem_insert_ref(x, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 1, i & 0xFF);
+          mem_insert_ref(x, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 1, index & 0xFF);
         }
       }
       /* direct 13-bit */
       else if (r->type == REFERENCE_TYPE_DIRECT_13BIT) {
-        i = (int)l->address;
-        if (i > 8191 || i < 0) {
+        index = (int)l->address;
+        if (index > 8191 || index < 0) {
           fprintf(stderr, "%s: %s:%d: FIX_REFERENCES: Value ($%x) of \"%s\" is too much to be a 13-bit value.\n",
-                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, i, l->name);
+                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, index, l->name);
           return FAILED;
         }
         /* this is always little endian */
-        mem_insert_ref(x, i & 0xFF);
-        mem_insert_ref_13bit_high(x + 1, (i >> 8) & 0xFF);
+        mem_insert_ref(x, index & 0xFF);
+        mem_insert_ref_13bit_high(x + 1, (index >> 8) & 0xFF);
       }
       /* direct / relative 8-bit with a value definition */
       else if (l->status == LABEL_STATUS_DEFINE && (r->type == REFERENCE_TYPE_DIRECT_8BIT || r->type == REFERENCE_TYPE_RELATIVE_8BIT)) {
-        i = ((int)l->address) & 0xFFFF;
-        if (i > 255 || i < -128) {
+        index = ((int)l->address) & 0xFFFF;
+        if (index > 255 || index < -128) {
           fprintf(stderr, "%s: %s:%d: FIX_REFERENCES: Value ($%x) of \"%s\" is too much to be a 8-bit value.\n",
-                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, i, l->name);
+                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, index, l->name);
           return FAILED;
         }
-        mem_insert_ref(x, i & 0xFF);
+        mem_insert_ref(x, index & 0xFF);
       }
       /* direct 24-bit */
       else if (r->type == REFERENCE_TYPE_DIRECT_24BIT) {
-        i = (int)l->address;
+        index = (int)l->address;
         if (l->status == LABEL_STATUS_LABEL)
-          i += get_snes_pc_bank(l);
+          index += get_snes_pc_bank(l);
         if (get_file(r->file_id)->little_endian == YES) {
-          mem_insert_ref(x, i & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 2, (i >> 16) & 0xFF);
+          mem_insert_ref(x, index & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 2, (index >> 16) & 0xFF);
         }
         else {
-          mem_insert_ref(x, (i >> 16) & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 2, i & 0xFF);
+          mem_insert_ref(x, (index >> 16) & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 2, index & 0xFF);
         }
       }
       /* relative 8-bit with a label */
       else if (r->type == REFERENCE_TYPE_RELATIVE_8BIT) {
-        i = (((int)l->address) & 0xFFFF) - r->address - 1;
-        if (i < -128 || i > 127) {
+        index = (((int)l->address) & 0xFFFF) - r->address - 1;
+        if (index < -128 || index > 127) {
           fprintf(stderr, "%s: %s:%d: FIX_REFERENCES: Too large distance (%d bytes from $%x to $%x \"%s\") for a relative 8-bit reference.\n",
-                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, i, r->address, (int)l->address, l->name);
+                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, index, r->address, (int)l->address, l->name);
           return FAILED;
         }
-        mem_insert_ref(x, i & 0xFF);
+        mem_insert_ref(x, index & 0xFF);
       }
       /* relative 16-bit with a label */
       else if (r->type == REFERENCE_TYPE_RELATIVE_16BIT) {
-        i = (((int)l->address) & 0xFFFF) - r->address - 2;
+        index = (((int)l->address) & 0xFFFF) - r->address - 2;
         /* NOTE: on 65ce02 the 16-bit relative references don't use the next
            instruction as the starting point, but one byte before it */
         if (get_file(r->file_id)->cpu_65ce02 == YES)
-          i += 1;
+          index += 1;
         
-        if (i < -32768 || i > 32767) {
+        if (index < -32768 || index > 32767) {
           fprintf(stderr, "%s: %s:%d: FIX_REFERENCES: Too large distance (%d bytes from $%x to $%x \"%s\") for a relative 16-bit reference.\n",
-                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, i, r->address, (int)l->address, l->name);
+                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, index, r->address, (int)l->address, l->name);
           return FAILED;
         }
         if (get_file(r->file_id)->little_endian == YES) {
-          mem_insert_ref(x, i & 0xFF);
-          mem_insert_ref(x + 1, (i >> 8) & 0xFF);
+          mem_insert_ref(x, index & 0xFF);
+          mem_insert_ref(x + 1, (index >> 8) & 0xFF);
         }
         else {
-          mem_insert_ref(x, (i >> 8) & 0xFF);
-          mem_insert_ref(x + 1, i & 0xFF);
+          mem_insert_ref(x, (index >> 8) & 0xFF);
+          mem_insert_ref(x + 1, index & 0xFF);
         }
       }
       else {
-        i = ((int)l->address) & 0xFFFF;
-        if (i > 255) {
+        index = ((int)l->address) & 0xFFFF;
+        if (index > 255) {
           fprintf(stderr, "%s: %s:%d: FIX_REFERENCES: Value ($%x) of \"%s\" is too much to be a 8-bit value.\n",
-                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, i, l->name);
+                  get_file_name(r->file_id), get_source_file_name(r->file_id, r->file_id_source), r->linenumber, index, l->name);
           return FAILED;
         }
 
         /* special case ID handling! */
         if (r->special_id > 0) {
-          if (_handle_special_case(r->special_id, r->file_id, r->file_id_source, r->linenumber, i, &i) == FAILED)
+          if (_handle_special_case(r->special_id, r->file_id, r->file_id_source, r->linenumber, index, &index) == FAILED)
             return FAILED;
         }
 
-        mem_insert_ref(x, i & 0xFF);
+        mem_insert_ref(x, index & 0xFF);
       }
     }
 
@@ -1665,7 +1665,7 @@ int write_rom_file(char *outname) {
 
   struct section *s;
   FILE *f;
-  int i, b, e;
+  int index, b, e;
 
   
   /* get the addresses of the program start and end */
@@ -1715,29 +1715,29 @@ int write_rom_file(char *outname) {
   /* ROM output mode */
   if (output_mode == OUTPUT_ROM) {
     /* write bank by bank and bank header sections */
-    for (i = 0; i < rombanks; i++) {
+    for (index = 0; index < rombanks; index++) {
       s = sec_bankhd_first;
       while (s != NULL) {
-        if (s->bank == i) {
+        if (s->bank == index) {
           fwrite(s->data, 1, s->size, f);
           break;
         }
         s = s->next;
       }
 
-      fwrite(rom + bankaddress[i], 1, banksizes[i], f);
+      fwrite(rom + bankaddress[index], 1, banksizes[index], f);
     }
   }
   /* program file output mode */
   else {
-    for (i = 0; i < romsize; i++) {
-      if (rom_usage[i] != 0)
+    for (index = 0; index < romsize; index++) {
+      if (rom_usage[index] != 0)
         break;
     }
-    b = i;
-    for (e = b; i < romsize; i++) {
-      if (rom_usage[i] != 0)
-        e = i;
+    b = index;
+    for (e = b; index < romsize; index++) {
+      if (rom_usage[index] != 0)
+        e = index;
     }
 
     /* overrides from the options to WLALINK */
@@ -3162,15 +3162,15 @@ int fix_sectionstartend_labels(void) {
 
 int get_slot_by_its_name(char *name, int *slot) {
 
-  int i;
+  int index;
   
   if (name == NULL || slot == NULL)
     return FAILED;
 
-  for (i = 0; i < 256; i++) {
-    if (slots[i].usage == ON) {
-      if (strcmp(slots[i].name, name) == 0) {
-        *slot = i;
+  for (index = 0; index < 256; index++) {
+    if (slots[index].usage == ON) {
+      if (strcmp(slots[index].name, name) == 0) {
+        *slot = index;
         return SUCCEEDED;
       }
     }
@@ -3184,7 +3184,7 @@ int get_slot_by_its_name(char *name, int *slot) {
 
 int get_slot_by_a_value(int value, int *slot) {
 
-  int i;
+  int index;
 
   if (slot == NULL)
     return FAILED;
@@ -3197,9 +3197,9 @@ int get_slot_by_a_value(int value, int *slot) {
   
   /* value can be the direct SLOT ID, but can it be a SLOT's address as well? */
   if (value < 256) {
-    for (i = 0; i < 256; i++) {
-      if (slots[i].usage == ON && slots[i].address == value && value != i && slots[value].usage == ON) {
-        fprintf(stderr, "GET_SLOT_BY_A_VALUE: There is a SLOT number %d, but there also is a SLOT (with ID %d) with starting address %d ($%x)... Using SLOT %d.\n", value, i, value, value, value);
+    for (index = 0; index < 256; index++) {
+      if (slots[index].usage == ON && slots[index].address == value && value != index && slots[value].usage == ON) {
+        fprintf(stderr, "GET_SLOT_BY_A_VALUE: There is a SLOT number %d, but there also is a SLOT (with ID %d) with starting address %d ($%x)... Using SLOT %d.\n", value, index, value, value, value);
         *slot = value;
         return SUCCEEDED;
       }
@@ -3209,9 +3209,9 @@ int get_slot_by_a_value(int value, int *slot) {
     return SUCCEEDED;
   }
 
-  for (i = 0; i < 256; i++) {
-    if (slots[i].usage == ON && slots[i].address == value) {
-      *slot = i;
+  for (index = 0; index < 256; index++) {
+    if (slots[index].usage == ON && slots[index].address == value) {
+      *slot = index;
       return SUCCEEDED;
     }
   }

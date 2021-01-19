@@ -37,28 +37,28 @@ int size = 0;
 int create_full_name(char *dir, char *name) {
 
   char *tmp;
-  int i;
+  int index;
 
   
   if (dir == NULL && name == NULL)
     return SUCCEEDED;
 
   /* compute the length of the new string */
-  i = 0;
+  index = 0;
   if (dir != NULL)
-    i += (int)strlen(dir);
+    index += (int)strlen(dir);
   if (name != NULL)
-    i += (int)strlen(name);
-  i++;
+    index += (int)strlen(name);
+  index++;
 
-  if (i > full_name_size) {
-    tmp = realloc(full_name, i);
+  if (index > full_name_size) {
+    tmp = realloc(full_name, index);
     if (tmp == NULL) {
       fprintf(stderr, "CREATE_FULL_NAME: Out of memory error.\n");
       return FAILED;
     }
     full_name = tmp;
-    full_name_size = i;
+    full_name_size = index;
   }
 
   if (dir != NULL) {

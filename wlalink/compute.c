@@ -210,7 +210,7 @@ int compute_gb_checksum(void) {
 
 int finalize_snes_rom(void) {
 
-  int i;
+  int index;
   
   
   if (snes_rom_mode == SNES_ROM_MODE_EXHIROM && romsize >= 0x410000) {
@@ -218,8 +218,8 @@ int finalize_snes_rom(void) {
     snprintf(mem_insert_action, sizeof(mem_insert_action), "%s", "Mirroring SNES ROM header from $40ffb0-$40ffff -> $ffb0-$ffff");
 
     /* mirror the cartridge rom header from $40ffb0-$40ffff -> $ffb0-$ffff */
-    for (i = 0; i < 5*16; i++)
-      mem_insert(0xffb0 + i, rom[0x40ffb0 + i]);
+    for (index = 0; index < 5*16; index++)
+      mem_insert(0xffb0 + index, rom[0x40ffb0 + index]);
   }
 
   /* create a what-we-are-doing message for mem_insert*() warnings/errors */
@@ -231,14 +231,14 @@ int finalize_snes_rom(void) {
 
 int compute_snes_exhirom_checksum(void) {
 
-  int i, j, checksum = 0, inv;
+  int index, j, checksum = 0, inv;
 
 
   /* do first the low 40-8Mbits (32Mbits) */
-  for (i = 0; i < 32/8*1024*1024; i++) {
+  for (index = 0; index < 32/8*1024*1024; index++) {
     /* skip the (mirrored) checksum bytes */
-    if (!(i == 0xFFDC || i == 0xFFDD || i == 0xFFDE || i == 0xFFDF))
-      checksum += rom[i];
+    if (!(index == 0xFFDC || index == 0xFFDD || index == 0xFFDE || index == 0xFFDF))
+      checksum += rom[index];
   }
 
   /* 2*255 is for the checksum and its complement bytes that we skipped earlier */
@@ -246,7 +246,7 @@ int compute_snes_exhirom_checksum(void) {
 
   /* next loop the remaining data until 64MBits are summed */
   j = 32/8*1024*1024;
-  for (i = 0; i < 32/8*1024*1024; i++) {
+  for (index = 0; index < 32/8*1024*1024; index++) {
     /* loop around? */
     if (j >= romsize)
       j = 32/8*1024*1024;
@@ -303,7 +303,7 @@ static int round_up_to_next_power_of_2(int x) {
 
 int compute_snes_checksum(void) {
 
-  int i, checksum, inv;
+  int index2, checksum, inv;
   int mirror_begin, mirror_end;
 
   /* ExHiROM jump */
@@ -331,20 +331,20 @@ int compute_snes_checksum(void) {
   mirror_begin = (mirror_end == romsize) ? romsize : mirror_end / 2;
 
   checksum = 0;
-  for (i = 0; i < mirror_begin; i++) {
+  for (index2 = 0; index2 < mirror_begin; index2++) {
     if (snes_rom_mode == SNES_ROM_MODE_LOROM || snes_rom_mode == SNES_ROM_MODE_EXLOROM) {
       /* skip the checksum bytes */
-      if (!(i == 0x7FDC || i == 0x7FDD || i == 0x7FDE || i == 0x7FDF))
-        checksum += rom[i];
+      if (!(index2 == 0x7FDC || index2 == 0x7FDD || index2 == 0x7FDE || index2 == 0x7FDF))
+        checksum += rom[index2];
     }
     else {
       /* skip the checksum bytes */
-      if (!(i == 0xFFDC || i == 0xFFDD || i == 0xFFDE || i == 0xFFDF))
-        checksum += rom[i];
+      if (!(index2 == 0xFFDC || index2 == 0xFFDD || index2 == 0xFFDE || index2 == 0xFFDF))
+        checksum += rom[index2];
     }
   }
-  for (i = mirror_begin; i < mirror_end; i++) {
-    int index = (i - mirror_begin) % (romsize - mirror_begin) + mirror_begin;
+  for (index2 = mirror_begin; index2 < mirror_end; index2++) {
+    int index = (index2 - mirror_begin) % (romsize - mirror_begin) + mirror_begin;
     if (index >= romsize) {
       fprintf(stderr, "COMPUTE_SNES_CHECKSUM: Internal error: attempted to access byte %#x of ROM with size %#x.\n", index, romsize);
       return FAILED;

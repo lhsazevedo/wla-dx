@@ -1970,18 +1970,18 @@ int find_label(char *str, struct section_def *s, struct label_def **out) {
   char* stripped;
   char prefix[MAX_NAME_LENGTH*2+2];
   struct label_def *l = NULL;
-  int i;
+  int index;
 
   str2 = strchr(str, '.');
-  i = (int)(str2-str);
+  index = (int)(str2-str);
   if (str2 == NULL) {
     stripped = str;
     prefix[0] = '\0';
   }
   else {
     stripped = str2+1;
-    strncpy(prefix, str, i);
-    prefix[i] = '\0';
+    strncpy(prefix, str, index);
+    prefix[index] = '\0';
   }
 
   *out = NULL;
